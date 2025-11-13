@@ -12,8 +12,6 @@ Data: 13/11/2025
 
 ****************/
 
-
-
 /* implementação do Ziviani começa aqui */
 typedef int TipoChave;
 
@@ -65,7 +63,7 @@ typedef struct{
  
 Segmento segm;
 
-void inserirElementos(int N, int *vet){
+void inserirElementos(int N, int vet[]){
       if(N<=0)return;
       
       FLVazia(&segm.elementos);
@@ -115,7 +113,7 @@ void encontrarPadrao(int N,int *vet){
        }
       p = p->Prox;
    }
-   if(confirmacao == 1){
+   if(confirmacao){
        printf("Resultado: Padrao encontrado.");
    }else{
        printf("Resultado: Padrao nao encontrado.");
@@ -123,8 +121,8 @@ void encontrarPadrao(int N,int *vet){
    
 }
 int main(){
-     int N=0;
-     printf("Digite o valor de N\n");
+     int N;
+     printf("Digite o valor de N\n");   //tem que remover quando for mandar para o beecrowd
      scanf("%d", &N);
      int vet[N];
      
@@ -132,7 +130,7 @@ int main(){
          scanf("%d", &vet[i]);
      }
      inserirElementos(N, vet);
-     
+
      encontrarPadrao(N, vet);
  return 0;
 }

@@ -16,7 +16,7 @@ Data: 13/11/2025
 typedef int TipoChave;
 
 typedef struct {
-    int Chave; // posição da ocorrência
+    int Chave;
 } TipoItem;
 
 typedef struct TipoCelula *TipoApontador;
@@ -30,7 +30,6 @@ typedef struct {
     TipoApontador Primeiro, Ultimo;
 } TipoLista;
 
-//  Funções do Ziviani
 void FLVazia(TipoLista *Lista) {
     Lista->Primeiro = (TipoApontador) malloc(sizeof(TipoCelula));
     Lista->Ultimo = Lista->Primeiro;
@@ -49,9 +48,9 @@ void Insere(TipoItem x, TipoLista *Lista) {
 }
 
 typedef struct {
-    int tipo;      // 1, 2 ou 3
-    int inicio;    // posição inicial do segmento
-    int fim;       // posição final do segmento
+    int tipo;
+    int inicio;
+    int fim;
 } SegmentoInfo;
 
 void inserirElementos(int N, int *vet, TipoLista *lista) {
@@ -62,6 +61,7 @@ void inserirElementos(int N, int *vet, TipoLista *lista) {
     int anterior = -1;
     int inicio_seg = 0;
 
+    //percorre o vetor identificando os segmentos contínuos do mesmo tipo
     for(int i=0; i<N; i++) {
         int tipo_atual;
         
@@ -72,14 +72,14 @@ void inserirElementos(int N, int *vet, TipoLista *lista) {
         } else if(vet[i] == 255) {
             tipo_atual = 3;
         } else {
-            continue; // ignora valores inválidos
+            continue;
         }
 
         if(tipo_atual != anterior) {
             if(anterior != -1) {
                 TipoItem item;
+                //a chave guarda: tipo * 1000000 + inicio * 1000 + fim
                 item.Chave = anterior * 1000000 + inicio_seg * 1000 + (i-1);
-                // formato: tipo * 1000000 + inicio * 1000 + fim
                 Insere(item, lista);
             }
             anterior = tipo_atual;
@@ -98,16 +98,16 @@ int encontrarPontoMedio(TipoLista *lista) {
     int n = 5;
     
     TipoApontador p = lista->Primeiro->Prox;
-    TipoApontador segmentos[100]; // guardar ponteiros dos segmentos
+    TipoApontador segmentos[100];
     int count = 0;
     
-    // Coletar todos os segmentos
+    //coleta todos os segmentos da lista
     while(p != NULL && count < 100) {
         segmentos[count++] = p;
         p = p->Prox;
     }
     
-    // Procurar o padrão
+    //procura o padrão 1-3-2-3-1 nos segmentos
     for(int i = 0; i <= count - n; i++) {
         int match = 1;
         for(int j = 0; j < n; j++) {
@@ -119,7 +119,7 @@ int encontrarPontoMedio(TipoLista *lista) {
         }
         
         if(match) {
-            // Encontrou o padrão! O segmento da pista é o índice i+2 (elemento tipo 2)
+            //encontrou o padrão, o segmento i+2 é a pista (tipo 2)
             int chave = segmentos[i+2]->Item.Chave;
             int inicio = (chave % 1000000) / 1000;
             int fim = chave % 1000;
@@ -128,7 +128,7 @@ int encontrarPontoMedio(TipoLista *lista) {
         }
     }
     
-    return -1; // Não encontrou o padrão
+    return -1;
 }
 int main(){
     int N, L;
@@ -155,7 +155,6 @@ int main(){
         }
     }
     
-    // Verificar se temos pelo menos 70% das linhas válidas
     float percentual = (float)linhas_validas / L;
     
     if(percentual < 0.7){
@@ -163,14 +162,13 @@ int main(){
         return 0;
     }
     
-    // Analisar tendência dos pontos médios usando regressão linear
     if(linhas_validas < 3) {
         printf("Resultado: Formato da pista nao estimado.\n");
         return 0;
     }
     
-    // Calcular coeficiente angular (inclinação) usando regressão linear
-    // y = ax + b, onde y = ponto_medio e x = índice da linha
+    //calcula o coeficiente angular usando regressão linear
+    //y = ax + b, onde y é o ponto médio e x é o índice da linha
     float soma_x = 0, soma_y = 0, soma_xy = 0, soma_x2 = 0;
     
     for(int i = 0; i < linhas_validas; i++) {
@@ -182,11 +180,9 @@ int main(){
         soma_x2 += x * x;
     }
     
-    // Coeficiente angular a = (n*sum(xy) - sum(x)*sum(y)) / (n*sum(x²) - (sum(x))²)
     float n = linhas_validas;
     float coef_angular = (n * soma_xy - soma_x * soma_y) / (n * soma_x2 - soma_x * soma_x);
     
-    // Calcular R² (coeficiente de determinação) para medir quão bem a linha se ajusta
     float media_y = soma_y / n;
     float ss_tot = 0, ss_res = 0;
     
@@ -199,19 +195,16 @@ int main(){
     
     float r2 = 1 - (ss_res / ss_tot);
     
-    // Decisão baseada no coeficiente angular
-    // Threshold mais tolerante: considerar linha reta para inclinações pequenas
-    
+    //decisão baseada no coeficiente angular
+    //se a inclinação for pequena, é linha reta
+    //se aumenta muito, é curva à esquerda, se diminui, é curva à direita
     if(coef_angular > -2.5 && coef_angular < 2.5) {
-        // Inclinação pequena = linha reta
         printf("Resultado: Pista em linha reta.\n");
     }
     else if(coef_angular >= 2.5) {
-        // Pontos médios aumentam fortemente = curva à esquerda
         printf("Resultado: Curva a esquerda.\n");
     }
     else if(coef_angular <= -2.5) {
-        // Pontos médios diminuem fortemente = curva à direita
         printf("Resultado: Curva a direita.\n");
     }
     else {

@@ -119,10 +119,12 @@ void encontrarPadrao(int N,int *vet) {
             confirmacao = 1;
             break;
         } 
-        else {
+        else if(p->Item.Chave != padrao[cont]) {
             if(p->Item.Chave == padrao[0]) {
                 vetAux[0]= p->Item.Chave;
                 cont = 1;
+            } else {
+                cont = 0;
             }
         }
         p = p->Prox;
@@ -132,18 +134,19 @@ void encontrarPadrao(int N,int *vet) {
     } else {
         printf("Resultado: Padrao nao encontrado.\n");
     }
- printf("confirmacao = %d\n" , confirmacao);
 }
-int main() {
-    int N=0;
-    scanf("%d", &N);
-    int vet[N];
+int main(){
 
-    for(int i =0; i<N; i++) {
-        scanf("%d", &vet[i]);
-    }
+    int N, L;
+    scanf("%d %d", &L, &N);
+
+    int vet[L][N];
+
+    for(int i = 0; i < L; i++) {
+    
+    } 
     inserirElementos(N, vet);
     encontrarPadrao(N, vet);
-    ImprimeLista(segm.elementos);
     return 0;
 }
+
